@@ -23,7 +23,7 @@ var arrowFrame_img
 var arrowGroup
 var arrowFrameGroup
 var input
-var drawing = true
+var drawing = true 
 var correctValue = 0
 var score
 var inputs = []
@@ -37,7 +37,7 @@ function preload(){
 
 function setup(){
    canvas = createCanvas(window.width = window.innerWidth, window.height = window.innerHeight)
-   //console.log(window.width, window.height) 
+   console.log("Window.width: ", window.width,"window.height: ", window.height)
    frameRate(80) 
     background(rgb(69, 69, 69))
     arrowGroup=new Group()
@@ -51,6 +51,7 @@ function updateCanvas(){
    window.width = window.innerWidth
    window.height = window.innerHeight
    canvas = createCanvas(window.width, window.height)
+   console.log("Window.width: ", window.width,"window.height: ", window.height)
    background(rgb(69, 69, 69))
    softReset()
 
@@ -60,14 +61,21 @@ function updateCanvas(){
 function comboSelect(){
    setSelect = Math.floor(Math.random() * stratagems.length);
    orderselect = Math.floor(Math.random() * stratagems[setSelect].length);
-   
+   for(var i = 0; i < stratagems[setSelect][orderselect].length; i++){
+      inputs.push(0)
+    }
+    drawing = true
 }
 
 function arrows(){
     console.log("arrows called")
-    arrow = createSprite(window.width * 0.1, rowCount * 100)
-    arrowFrame = createSprite(window.width * 0.1, rowCount * 100)
+    console.log("Made arrow: ", count)
+    arrow = createSprite(positionCount * 100, rowCount * 100)
+    arrowFrame = createSprite(positionCount * 100, rowCount * 100)
     arrowFrame.depth = arrow.depth += 1
+
+    arrow.x = positionCount * 100
+    arrowFrame.x = positionCount * 100
 
     arrow.debug = true
 
@@ -84,8 +92,7 @@ function arrows(){
     arrowFrame.scale = 0.12
     rectMode(CENTER)
 
-    arrow.x = positionCount * 100
-    arrowFrame.x = positionCount * 100
+
 
     var arrowRotation = stratagems[setSelect][orderselect][count]
     //var arrowFrameColour = setSelect
@@ -119,13 +126,13 @@ function arrows(){
             break
     }
 
-      /*
+      
       console.log("Before move for arrow:" , count)
       console.log("Arrow.x = ",arrow.x)
       console.log("Arrow.y = ",arrow.y)
       console.log("ArrowFrame.x = ",arrowFrame.x)
       console.log("ArrowFrame.y = ",arrowFrame.y)
-      */
+      
 
     if(arrow.x >= window.width - 100 || arrowFrame.x >= window.width - 100){
       rowCount ++
@@ -142,37 +149,28 @@ function arrows(){
     }
 
       
-      /*
       console.log("After move for arrow:" , count)
       console.log("Arrow.x = ",arrow.x)
       console.log("Arrow.y = ",arrow.y)
       console.log("ArrowFrame.x = ",arrowFrame.x)
       console.log("ArrowFrame.y = ",arrowFrame.y)
-      */
       
+      arrowFrame.setFrame(setSelect)
 
+      console.log(inputs)
 
-    arrowFrame.setFrame(setSelect)
-
-    for(var i = 0; i < inputs.length; i++){
-      if(inputs[i] == 1){
+      if(inputs[count] == 1){
          arrow.setFrame(1)
-      }
-      else{
+         console.log("setFrame 1")
+      } else if (inputs[count] != 1){
          arrow.setFrame(0)
+         console.log("setFrame 0")
       }
-
       
-    }
+
 
     arrowGroup.add(arrow)
     arrowFrameGroup.add(arrowFrame)
-
-    
-   
-
-    arrowGroup.setVisibleEach(true)
-    arrowFrameGroup.setVisibleEach(true)
 }
 
 function rescale(){
@@ -180,14 +178,9 @@ function rescale(){
       arrowFrameGroup.setScaleEach(0.08)
 }
 
-function reposition(){
-   //reset()
-   
-}
-
 function arrowCheck(){
    if(input == stratagems[setSelect][orderselect][inputCount] & count >= stratagems[setSelect][orderselect].length){
-      inputs.push(1)
+      inputs[inputCount] = 1
       if (inputs[inputCount] == 1){
          arrowGroup.get(inputCount).setFrame(1)
       }
@@ -211,7 +204,6 @@ function reset() {
    arrowGroup.remove(arrow), arrowFrameGroup.remove(arrowFrame)
    canvas = createCanvas(window.width = window.innerWidth, window.height = window.innerHeight)
    console.log(window.width, window.height) 
-   //updateCanvas()
    background(rgb(69, 69, 69))
    count = 0
    rowCount = 1
@@ -226,29 +218,24 @@ function reset() {
 
 function softReset() {
    console.log("softReset called")
-   //canvas.clear()
    arrowGroup.destroyEach(), arrowFrameGroup.destroyEach()
    arrowGroup.clear(), arrowFrameGroup.clear()
    arrowGroup.remove(arrow), arrowFrameGroup.remove(arrowFrame)
    count = 0
    rowCount = 1
    positionCount = 1
-   inputCount = 0
+   drawing = true
 }
 
 function draw(){
 
-   //console.log("input is: ", input)
-   //console.log("count is: ", count)
-   //console.log("inputCount is: ", inputCount)
-   //console.log("drawing is: ", drawing)
+   /*if(frameCount%40==0  &  window.height != window.innerHeight || window.width != window.innerWidth){
+      updateCanvas()
+      softReset()
+      
+   }*/
 
-   //window.width = window.innerWidth
-   //window.height = window.innerHeight
-
-   console.log("Window.width: ", window.width,"window.height: ", window.height) 
-
-   if(window.height != window.innerHeight || window.width != window.innerWidth){
+   if(window.height > window.innerHeight + 10 || window.height < window.innerHeight - 10 || window.width > window.innerWidth + 10 || window.width < window.innerWidth - 10){
       updateCanvas()
       softReset()
       
@@ -256,17 +243,19 @@ function draw(){
 
    
 
-   if(count != stratagems[setSelect][orderselect].length){
+   if(count != stratagems[setSelect][orderselect].length & drawing == true){
         arrows()
-        drawing = true
         count ++
         positionCount ++
    }
 
-   if(count == stratagems[setSelect][orderselect]){
+   if(count == stratagems[setSelect][orderselect].length){
       drawing = false
-      console.log("drawing is: ", drawing)
+      arrowGroup.setVisibleEach(true)
+      arrowFrameGroup.setVisibleEach(true)
    }
+
+   console.log("drawing is: ", drawing)
 
    if(keyWentDown(87) || keyWentDown(38)){
         input = 1
