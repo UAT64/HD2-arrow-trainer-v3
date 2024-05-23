@@ -77,7 +77,7 @@ function arrows(){
     arrow.x = positionCount * 100
     arrowFrame.x = positionCount * 100
 
-    arrow.debug = true
+    arrow.debug = false
 
     arrow.addAnimation("arrowAnim", arrowEmpty_img)
     arrow.pause()
