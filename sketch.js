@@ -1,4 +1,3 @@
-
 var position
 var rotation
 var count = 0
@@ -27,6 +26,7 @@ var drawing = true
 var correctValue = 0
 var score
 var inputs = []
+var widthCache, heightCache
 
 
 
@@ -36,8 +36,10 @@ function preload(){
 }
 
 function setup(){
-   canvas = createCanvas(window.width = window.innerWidth, window.height = window.innerHeight)
-   console.log("Window.width: ", window.width,"window.height: ", window.height)
+   canvas = createCanvas(window.innerWidth, window.innerHeight)
+   widthCache = window.innerWidth
+   heightCache = window.innerHeight
+   console.log("Window.width: ", window.innerWidth,"window.height: ", window.innerHeight)
    frameRate(80) 
     background(rgb(69, 69, 69))
     arrowGroup=new Group()
@@ -50,10 +52,11 @@ function updateCanvas(){
    canvas.clear()
    window.width = window.innerWidth
    window.height = window.innerHeight
-   canvas = createCanvas(window.width, window.height)
+   widthCache = window.innerWidth
+   heightCache = window.innerHeight
+   canvas = createCanvas(window.innerWidth, window.innerHeight)
    console.log("Window.width: ", window.width,"window.height: ", window.height)
    background(rgb(69, 69, 69))
-   softReset()
 
 }
 
@@ -133,8 +136,10 @@ function arrows(){
       console.log("ArrowFrame.x = ",arrowFrame.x)
       console.log("ArrowFrame.y = ",arrowFrame.y)
       
+      window.width = window.innerWidth
+      window.height = window.innerHeight
 
-    if(arrow.x >= window.width - 100 || arrowFrame.x >= window.width - 100){
+    if(arrow.x >= window.innerWidth - 100 || arrowFrame.x >= window.innerWidth - 100){
       rowCount ++
       arrow.y =  rowCount * 100
       arrowFrame.y = rowCount * 100
@@ -143,9 +148,10 @@ function arrows(){
       arrowFrame.x = positionCount * 100
     }
 
-    if(arrow.y >= window.height - 100 || arrowFrame.y >= window.height - 100){
+    if(arrow.y >= window.innerHeight - 100 || arrowFrame.y >= window.innerHeight - 100){
       rescale()
       updateCanvas()
+      softReset()
     }
 
       
@@ -202,7 +208,9 @@ function reset() {
    arrowGroup.destroyEach(), arrowFrameGroup.destroyEach()
    arrowGroup.clear(), arrowFrameGroup.clear()
    arrowGroup.remove(arrow), arrowFrameGroup.remove(arrowFrame)
-   canvas = createCanvas(window.width = window.innerWidth, window.height = window.innerHeight)
+   widthCache = window.innerWidth
+   heightCache = window.innerHeight
+   canvas = createCanvas(window.innerWidth, window.innerHeight)
    console.log(window.width, window.height) 
    background(rgb(69, 69, 69))
    count = 0
@@ -229,21 +237,25 @@ function softReset() {
 
 function draw(){
 
-   /*if(frameCount%40==0  &  window.height != window.innerHeight || window.width != window.innerWidth){
+   /*if(frameCount%40==0  &  window.innerHeight != heightCache || window.Innerwidth != widthCache){
       updateCanvas()
       softReset()
       
    }*/
 
-   if(window.height > window.innerHeight + 10 || window.height < window.innerHeight - 10 || window.width > window.innerWidth + 10 || window.width < window.innerWidth - 10){
+   console.log("Window.width: ", window.innerWidth,"window.height: ", window.innerHeight)
+
+   window.width = window.innerWidth
+   canvas.width = window.innerWidth
+   window.height = window.innerHeight
+   canvas.Height = window.innerHeight
+
+   if(heightCache > window.innerHeight + 10 || heightCache < window.innerHeight - 10 || widthCache > window.innerWidth + 10 || widthCache < window.innerWidth - 10){
       updateCanvas()
       softReset()
-      
    }
 
-   
-
-   if(count != stratagems[setSelect][orderselect].length & drawing == true){
+   if(/*count != stratagems[setSelect][orderselect].length &*/ drawing == true){
         arrows()
         count ++
         positionCount ++
@@ -291,10 +303,3 @@ function draw(){
 
    drawSprites()
 }
-
-   
-
-
-
-
-
